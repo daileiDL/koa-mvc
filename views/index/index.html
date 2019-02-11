@@ -1,0 +1,164 @@
+<!--index.html-->
+{{extend 'layout.html'}}
+
+{{block 'title'}}首页{{/block}}
+
+{{block 'head'}}
+<link rel="stylesheet" href="css/index.css">
+{{/block}}
+
+{{block 'content'}}
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <form class="navbar-form navbar-left" role="search" method="get" action="/">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="书名" name="book_name" value="{{querys.book_name || ''}}">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" id="searchbook" type="submit">查找</button>
+                </span>
+            </div>
+        </form>
+        <div class="navbar-header pull-right">
+            <span data-toggle="modal" data-target="#myModal" type="button" class="btn btn-primary navbar-btn">添加图书</span>
+        </div>
+    </div>
+</nav>
+<table class="table table-bordered table-hover table-striped text-center">
+    <tr class="info">
+        <th class="text-center">#</th>
+        <th class="text-center">书名</th>
+        <th class="text-center">作者</th>
+        <th class="text-center">出版社</th>
+        <th class="text-center">出版日期</th>
+        <th class="text-center">简介</th>
+        <th class="text-center">备注</th>
+        <th class="text-center">操作</th>
+    </tr>
+    {{each books}}
+    <tr>
+        <td>
+            {{$value.book_id}}
+        </td>
+        <td>
+            {{$value.book_name}}
+        </td>
+        <td>
+            {{$value.book_author}}
+        </td>
+        <td>
+            {{$value.book_publish}}
+        </td>
+        <td>
+            {{$value.book_date}}
+        </td>
+        <td>
+            {{$value.book_summary}}
+        </td>
+        <td>
+            {{$value.book_remark}}
+        </td>
+        <td>
+            <a href="/admin/book/edit/{{$value.book_id}}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a>&nbsp;&nbsp;&nbsp;
+            <a href="/admin/book/delete/{{$value.book_id}}"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+        </td>
+    </tr>
+    {{/each}}
+
+</table>
+
+<div id="page" class="pagination"></div>
+
+<!-- 添加模态框 -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="gridSystemModalLabel">添加图书</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="book_name" class="col-sm-2 control-label">书名</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="book_name" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="book_author" class="col-sm-2 control-label">作者</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="book_author">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="book_publish" class="col-sm-2 control-label">出版社</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="book_publish">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="book_date" class="col-sm-2 control-label">出版日期</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="book_date">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="book_summary" class="col-sm-2 control-label">简介</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="book_summary">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="book_remark" class="col-sm-2 control-label">备注</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="book_remark">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" id="addbook" class="btn btn-primary">保存</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+{{/block}}
+
+{{block 'script'}}
+<script src="/script/jqPaginator-2.0.1/dist/jq-paginator.min.js"></script>
+<script src="/js/dl.js"></script>
+<script type="nomodule">
+    console.log("我支持module");
+        import("/js/add.js").then((_)=>{
+            const book = new _.default;
+            console.log(book)
+            book.add();
+        });
+</script>
+<script type="module" src="https://cdn.staticfile.org/systemjs/3.0.0/system.js"></script>
+<script type="module">
+    System.import('/js/add-bundle.js').then((_)=>{
+            const book = new _.default;
+            book.add();
+        });
+</script>
+<script>
+    $('#page').jqPaginator({
+        totalPages: parseInt('{{pages.pageCount}}'),
+        visiblePages: 8,
+        currentPage: parseInt('{{pages.currentPage}}'),
+        first: '<li><a href="javascript:void(0);">首页</a></li>',
+        prev: '<li><a href="javascript:void(0);">上一页</a></li>',
+        next: '<li><a href="javascript:void(0);">下一页</a></li>',
+        last: '<li><a href="javascript:void(0);">尾页</a></li>',
+        page: '<li><a href="javascript:void(0);">\{\{page\}\}</a></li>',
+        onPageChange: function (num, type) {
+            console.log(num, type);
+            if (type == 'change') {
+                location.href = "/?book_name={{querys.book_name || ''}}&page=" + num;
+            }
+        }
+    });
+</script>
+{{/block}}
